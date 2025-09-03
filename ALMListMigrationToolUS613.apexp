@@ -1,0 +1,101 @@
+<apex:page title="ACE List Migration Tool US613" id="aceListMigrationTool" showHeader="false" sidebar="false" contentType="text/html"> 
+    
+    <style>
+        body
+        {
+            margin:0;
+        }
+                      
+        .imageHeader  
+        {
+            padding:0 5px;
+        }
+        
+        .flashDiv
+        {
+            position: absolute;
+            height: expression(document.body.clientHeight - 52 + "px");
+            min-height: 100%; 
+        }
+    </style>
+    
+    <!-- Script to configure the page header -->
+    <script language="javascript" src="{!$Resource.ALMVisualForceTitle}" />
+    <!-- Script to support loading html page over the flex application -->
+    <script language="javascript" src="{!$Resource.ALMIFrameUtil}" />
+    <!-- Script to support export to excel functionality -->
+    <script language="javascript" src="{!$Resource.ALMExcelUtil}" />    
+    <!-- Script to support loading the flex application -->
+    <script language="javascript" src="{!$Resource.SWFObject}" /> 
+    
+    <!-- Style for the page header -->
+    <apex:stylesheet value="{!$Resource.ALMVisualForceClientHeader}" />
+    
+    
+    <!-- Utility function -->
+    <script type="text/javascript">
+    
+        /**
+        * Refresh the current page
+        */
+        function refresh()
+        {
+            parent.location.reload();
+        }
+        
+    </script>
+    
+    
+    <!-- Header for the application -->
+    <apex:outputPanel id="clientHeader" style="padding:5px 0;width:100%;height45px;" layout="block" styleClass="clientHeader">
+        <apex:image styleClass="imageHeader" value="{!$Resource.ALMVisualForceClientLogo}" />
+    </apex:outputPanel>
+    
+    
+    <!-- Container for the application -->
+    <div id="flashcontent" align="center" class="flashDiv"></div>
+    
+    <!-- Script to load the application and pass the expected parameters -->
+    <script type="text/javascript">
+    
+        var _SERVER_URL = "{!$Api.Partner_Server_URL_90}";
+        
+        var _DOMAIN = _SERVER_URL.substr(0, _SERVER_URL.indexOf("/services",0));
+        
+        var so = new SWFObject("{!$Resource.ACEListMigrationToolUS613}", "FlexSalesforce", "100%", "100%", "9", "#FFFFFF");
+        so.addVariable("session_id", "{!$Api.Session_ID}");
+        so.addVariable("server_url", "{!$Api.Partner_Server_URL_90}");
+        so.addVariable("aceWebServices_wsdl_uri", _DOMAIN+"{!$Resource.WsdlAceWebservices}");
+        so.addVariable("almWebServices_wsdl_uri", _DOMAIN+"{!$Resource.WsdlAlmWebservices}");
+        so.addVariable("aceCommonWebServices_wsdl_uri", _DOMAIN+"{!$Resource.WsdlAceWebservices}");        
+        so.addVariable("featureCacheWebServices_wsdl_uri", _DOMAIN+"{!$Resource.WsdlFeatureCacheWebServices}");
+        so.addVariable("domain", _DOMAIN+"/");
+        <!-- To Enable ALM Log Window, enable the line below, add or adjust the value to logFilters -->
+        so.addVariable("logFilters", "com.straightthrough.crmsolutions.flex.messaging.cache.ACECache;com.straightthrough.crmsolutions.flex.messaging.cache.ACECacheObject;com.straightthrough.crmsolutions.flex.rpc.ace.ACEOperation.*;");
+        <!-- Specifies maximum number of SOAP message retries -->
+        so.addVariable("maxSOAPRetries", "3");
+        so.write("flashcontent");
+        
+    </script>
+
+    
+    <!-- This div is used to display visualforce pages over the flex application -->
+    <div id="customFrame" style="background-color:transparent;border:0px;visibility:hidden;display:none;z-index:5;overflow:auto;"></div> 
+    
+    <!-- Configure the "customFrame" div depending on the browser -->
+    <script type="text/javascript">
+        
+        var cF = document.getElementById("customFrame");
+        if (navigator.appName.indexOf("Microsoft") != -1)
+        {
+            cF.style.position = 'absolute';
+        }
+        else
+        {
+            cF.style.position = 'fixed';
+        }
+        
+    </script>
+
+
+</apex:page>

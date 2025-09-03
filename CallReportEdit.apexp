@@ -1,0 +1,433 @@
+<apex:page standardController="Call_Report__c" tabStyle="Call_Report__c" extensions="CallReportExtension" showHeader="{!showHeader}" sidebar="{!showSidebar}">
+<style>
+.labelAlign{
+    text-align: left;
+    color: #333333;
+}
+.buttonLeftClass {
+  background-image:url('{!$Resource.SFLeftArrow}');
+  width: 24px;
+  height:20px;
+  padding: 0;
+  border:none;
+}
+.buttonRightClass {
+  background-image:url('{!$Resource.SFRightArrow}');
+  width:24px;
+  height:20px;
+  pading:0;
+  border:none;
+}
+</style>
+<apex:sectionHeader title="Call Report Edit" subtitle="{!Subtitle}"/>
+<apex:form >
+            
+     <apex:pageBlock title="Call Report Edit" mode="edit">
+     <apex:pageMessages id="errors"/>
+     
+          <apex:pageBlockButtons location="top">
+               <apex:commandButton value="Save" action="{!saveAttTasks}"/>
+               <apex:commandButton value="Cancel" action="{!cancel}" onclick="closePage(null)" immediate="true"/>
+          </apex:pageBlockButtons>
+          <apex:pageBlockButtons location="bottom">
+               <apex:commandButton value="Save" action="{!saveAttTasks}"/>
+               <apex:commandButton value="Cancel" action="{!cancel}" onclick="closePage(null)" immediate="true"/>
+          </apex:pageBlockButtons>
+          
+          <apex:pageBlockSection id="InformationWrite" title="Information" columns="2" collapsible="true" rendered="{!LockWrite}">
+               
+               <!-- <apex:inputField value="{!callreport.Subject_Meeting_Objectives__c}" style="width:300px" /> -->
+               <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="1" styleClass="labelAlign" width="100%">    
+                        <apex:outputLabel value="Subject / Objectives" style="padding-left: 20px;"/></apex:panelGrid> 
+                    <apex:inputField value="{!callreport.Subject_Meeting_Objectives__c}" required="true" style="width:300px" />
+               </apex:pageBlockSectionItem>
+               
+               <!-- <apex:outputField title="Client" value="{!callreport.Client__c}" />-->
+               <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="1" styleClass="labelAlign" width="100%">    
+                        <apex:outputLabel value="Client" style="padding-left: 80px;"/></apex:panelGrid> 
+                    <apex:outputField value="{!callreport.Client__c}" />
+               </apex:pageBlockSectionItem>
+               
+                <!-- <apex:inputField value="{!callreport.Meeting_Date__c}" required="true" />-->
+               <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="1" styleClass="labelAlign" width="100%">    
+                        <apex:outputLabel value="Meeting Date" style="padding-left: 20px;"/></apex:panelGrid> 
+                    <apex:inputField value="{!callreport.Meeting_Date__c}" required="true" />
+               </apex:pageBlockSectionItem>
+               
+               <!--<apex:outputField title="Owner" value="{!callreport.OwnerId}" />-->
+               <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="1" styleClass="labelAlign" width="100%">    
+                        <apex:outputLabel value="Logged By" style="padding-left: 80px;"/></apex:panelGrid> 
+                    <apex:inputField value="{!callreport.Logged_By__c}" required="true"/>
+               </apex:pageBlockSectionItem>
+               
+               <!-- <apex:inputField value="{!callreport.Meeting_Type__c}" required="true" /> -->
+               <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="1" styleClass="labelAlign" width="100%">    
+                        <apex:outputLabel value="Meeting Type" style="padding-left: 20px;"/></apex:panelGrid> 
+                    <apex:inputField value="{!callreport.Meeting_Type__c}" required="true" />
+               </apex:pageBlockSectionItem>
+               
+               <!--<apex:outputField title="Status" value="{!callreport.Status__c}" />-->
+               <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="1" styleClass="labelAlign" width="100%">    
+                        <apex:outputLabel value="Status" style="padding-left: 80px;"/></apex:panelGrid> 
+                    <apex:inputField value="{!callreport.Status__c}" />
+               </apex:pageBlockSectionItem>
+               
+               <!-- <apex:inputField value="{!callreport.Location__c}" style="width:300px" /> -->
+               <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="1" styleClass="labelAlign" width="100%">    
+                        <apex:outputLabel value="Location" style="padding-left: 20px;"/></apex:panelGrid> 
+                    <apex:inputField value="{!callreport.Location__c}" style="width:300px" />
+               </apex:pageBlockSectionItem>
+               
+               <!--<apex:outputField title="Private" value="{!callreport.Private__c}" />-->
+               <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="1" styleClass="labelAlign" width="100%">    
+                        <apex:outputLabel value="Private" style="padding-left: 80px;"/></apex:panelGrid> 
+                    <apex:inputField value="{!callreport.Private__c}" />
+               </apex:pageBlockSectionItem>   
+               
+               <!-- <apex:inputField value="{!callreport.Time_Spent_Min__c}" required="true" /> -->
+               <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="1" styleClass="labelAlign" width="100%">    
+                        <apex:outputLabel value="Time Spent(Min)" style="padding-left: 20px;"/></apex:panelGrid> 
+                    <apex:inputField value="{!callreport.Time_Spent_Min__c}" />
+               </apex:pageBlockSectionItem>
+                         
+          </apex:pageBlockSection>
+          
+          <!-- Displayed when Locked -->
+          <apex:pageBlockSection id="InformationRead" title="Information" columns="2" collapsible="true" rendered="{!LockRead}">
+               
+               <!-- <apex:inputField value="{!callreport.Subject_Meeting_Objectives__c}" style="width:300px" /> -->
+               <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="1" styleClass="labelAlign" width="100%">    
+                        <apex:outputLabel value="Subject / Objectives" style="padding-left: 20px;"/></apex:panelGrid> 
+                    <apex:outputField value="{!callreport.Subject_Meeting_Objectives__c}" style="width:300px" />
+               </apex:pageBlockSectionItem>
+               
+               <!-- <apex:outputField title="Client" value="{!callreport.Client__c}" />-->
+               <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="1" styleClass="labelAlign" width="100%">    
+                        <apex:outputLabel value="Client" style="padding-left: 80px;"/></apex:panelGrid> 
+                    <apex:outputField value="{!callreport.Client__c}" />
+               </apex:pageBlockSectionItem>
+               
+                <!-- <apex:inputField value="{!callreport.Meeting_Date__c}" required="true" />-->
+               <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="1" styleClass="labelAlign" width="100%">    
+                        <apex:outputLabel value="Meeting Date" style="padding-left: 20px;"/></apex:panelGrid> 
+                    <apex:outputField value="{!callreport.Meeting_Date__c}" />
+               </apex:pageBlockSectionItem>
+               
+               <!--<apex:outputField title="Owner" value="{!callreport.OwnerId}" />-->
+               <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="1" styleClass="labelAlign" width="100%">    
+                        <apex:outputLabel value="Logged By" style="padding-left: 80px;"/></apex:panelGrid> 
+                    <apex:outputField value="{!callreport.Logged_By__c}" />
+               </apex:pageBlockSectionItem>
+               
+               <!-- <apex:inputField value="{!callreport.Meeting_Type__c}" required="true" /> -->
+               <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="1" styleClass="labelAlign" width="100%">    
+                        <apex:outputLabel value="Meeting Type" style="padding-left: 20px;"/></apex:panelGrid> 
+                    <apex:outputField value="{!callreport.Meeting_Type__c}"/>
+               </apex:pageBlockSectionItem>
+               
+               <!--<apex:outputField title="Status" value="{!callreport.Status__c}" />-->
+               <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="1" styleClass="labelAlign" width="100%">    
+                        <apex:outputLabel value="Status" style="padding-left: 80px;"/></apex:panelGrid> 
+                    <apex:outputField value="{!callreport.Status__c}" />
+               </apex:pageBlockSectionItem>
+               
+               <!-- <apex:inputField value="{!callreport.Location__c}" style="width:300px" /> -->
+               <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="1" styleClass="labelAlign" width="100%">    
+                        <apex:outputLabel value="Location" style="padding-left: 20px;"/></apex:panelGrid> 
+                    <apex:outputField value="{!callreport.Location__c}" style="width:300px" />
+               </apex:pageBlockSectionItem>
+               
+               <!--<apex:outputField title="Private" value="{!callreport.Private__c}" />-->
+               <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="1" styleClass="labelAlign" width="100%">    
+                        <apex:outputLabel value="Private" style="padding-left: 80px;"/></apex:panelGrid> 
+                    <apex:outputField value="{!callreport.Private__c}" />
+               </apex:pageBlockSectionItem>   
+               
+               <!-- <apex:inputField value="{!callreport.Time_Spent_Min__c}" required="true" /> -->
+               <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="1" styleClass="labelAlign" width="100%">    
+                        <apex:outputLabel value="Time Spent(Min)" style="padding-left: 20px;"/></apex:panelGrid> 
+                    <apex:outputField value="{!callreport.Time_Spent_Min__c}" />
+               </apex:pageBlockSectionItem>
+                         
+          </apex:pageBlockSection>
+
+          
+          
+          <table style="width:100%"><tr><td style="width:50%">
+          <apex:pageBlockSection id="IntSection" title="CIBC Attendees" columns="1" collapsible="true">
+          <apex:outputPanel id="searchInt">
+          <apex:actionRegion >
+          <table >
+          <tr>
+             <td><apex:outputLabel value="Search Employees: "/></td>
+             <td><apex:inputText value="{!searchEmp}" /></td>
+             <td><apex:commandButton action="{!Find}" value="Find" rerender="out1,errors" status="IntStatus"/></td>
+             <td><apex:commandButton action="{!Clear}" value="Clear" rerender="searchInt,out1,errors" status="IntStatus"/></td>
+          </tr> 
+          </table>
+          </apex:actionRegion>
+          </apex:outputPanel>
+          
+          <apex:outputPanel id="out1">
+          <apex:actionRegion >
+            <table style="width:100%">
+            <tr>
+                <td style="width:45%"><b>Available</b></td>
+                <td style="width:10%"></td>
+                <td style="width:45%"><b>Selected</b></td>
+            </tr>
+            <tr>
+                <td style="width:45%"><apex:selectList value="{!InternalAttIn}" multiselect="true" size="5" style="width:100%">
+                        <apex:selectOptions value="{!ItemsIn}"/>
+                    </apex:selectList>
+</td>
+                <td style="width:10%">
+                    <table>
+                    <!--<tr><td>&amp;nbsp;</td></tr>-->
+                    <tr><td align="center">Add</td></tr>
+                    <tr><td align="center"><apex:commandButton styleClass="buttonRightClass" action="{!addInternals}" rerender="out1,errors" status="IntStatus"/></td></tr>
+                    <tr><td align="center"><apex:commandButton styleClass="buttonLeftClass" action="{!removeInternals}" rerender="out1,errors" status="IntStatus"/></td></tr>
+                    <tr><td align="center">Remove</td></tr>
+                    </table>    
+                </td>
+                <td style="width:45%"><apex:selectList value="{!InternalAttOut}" multiselect="true" size="5" style="width:100%">
+                        <apex:selectOptions value="{!ItemsOut}"/>
+                    </apex:selectList>
+</td>
+            </tr>
+            <tr>
+                <td colspan="3"><apex:actionStatus startText="Requesting..." id="IntStatus"/></td>
+            </tr>
+            </table>
+          </apex:actionRegion>        
+          </apex:outputPanel>
+        </apex:pageBlockSection>
+        </td>
+        
+        <td style="width:50%">
+        <apex:pageBlockSection id="ExtSection" title="Client Attendees" columns="1" collapsible="true">
+          <apex:outputPanel id="searchExt">
+          <apex:actionRegion >
+          <table >
+          <tr>
+             <td><apex:outputLabel value="Search Contacts:"/></td>
+             <td><apex:inputText value="{!searchCtn}"/></td>
+             <td><apex:commandButton action="{!c_Find}" value="Find" rerender="out2,errors" status="ExtStatus"/></td>
+             <td><apex:commandButton action="{!c_Clear}" value="Clear" rerender="searchExt,out2,errors" status="ExtStatus"/></td>
+          </tr> 
+          </table>
+          </apex:actionRegion>
+          </apex:outputPanel>
+          
+          <apex:outputPanel id="out2">
+            <apex:actionRegion >         
+            <table style="width:100%">
+            <tr>
+                <td style="width:45%"><b>Available</b></td>
+                <td style="width:10%"></td>
+                <td style="width:45%"><b>Selected</b></td>
+            </tr>
+            <tr>
+                <td style="width:45%">
+                    <apex:selectList value="{!ExternalAttIn}" multiselect="true" size="5" style="width:100%">
+                        <apex:selectOptions value="{!c_ItemsIn}"/>
+                    </apex:selectList>
+
+                </td>
+                <td style="width:10%">
+                    <table>
+                    <!--<tr><td>&amp;nbsp;</td></tr>-->
+                    <tr><td align="center">Add</td></tr>
+                    <tr><td align="center"><apex:commandButton styleClass="buttonRightClass" action="{!addExternals}" rerender="out2,errors" status="ExtStatus"/></td></tr>
+                    <tr><td align="center"><apex:commandButton styleClass="buttonLeftClass" action="{!removeExternals}" rerender="out2,errors" status="ExtStatus"/></td></tr>
+                    <tr><td align="center">Remove</td></tr>
+                    </table>    
+                </td>
+                <td style="width:45%">
+                    <apex:selectList value="{!ExternalAttOut}" multiselect="true" size="5" style="width:100%">
+                        <apex:selectOptions value="{!c_ItemsOut}"/>
+                    </apex:selectList>
+
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3"><apex:actionStatus startText="Requesting..." id="ExtStatus"/></td>
+            </tr>
+        </table>
+        </apex:actionRegion>        
+        </apex:outputPanel>
+        </apex:pageBlockSection>
+        </td>
+        </tr>
+        </table>
+        
+        <apex:pageBlockSection title="Call Report Details" columns="1" rendered="{!LockWrite}">
+           <!--<apex:inputField value="{!callreport.Notes__c}" style="width:500px" required="true"/>-->
+           <apex:pageBlockSectionItem >
+                <apex:panelGrid columns="1" styleClass="labelAlign" width="100%">    
+                    <apex:outputLabel value="Notes" style="padding-left: 20px;"/></apex:panelGrid> 
+                <apex:inputField value="{!callreport.Notes__c}" style="width:90%" required="true" />
+           </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+ 
+         <apex:pageBlockSection title="Call Report Details" columns="1" rendered="{!LockRead}">
+           <!--<apex:inputField value="{!callreport.Notes__c}" style="width:500px" required="true"/>-->
+           <apex:pageBlockSectionItem >
+                <apex:panelGrid columns="1" styleClass="labelAlign" width="100%">    
+                    <apex:outputLabel value="Notes" style="padding-left: 20px;"/></apex:panelGrid> 
+                <apex:outputField value="{!callreport.Notes__c}" style="width:90%"/>
+           </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+ 
+ 
+        <apex:pageBlockSection id="TaskSec" title="Add Task" columns="1" collapsible="true">
+          <apex:outputPanel >
+          <apex:actionRegion >
+          <table style="width:100%">
+            <tr>
+                <td>
+                <table>
+                    <tr>
+                        <td><b>Assigned To</b></td>
+                        <td><b>Subject</b></td>
+                        <td><b>Contact Name</b></td>
+                        <td><b>Due Date</b></td>
+                        <td><b>Priority</b></td>
+                    </tr>
+                    <tr>
+                        <td><apex:inputField value="{!myTask.OwnerId}" /></td>
+                        <td><apex:inputField value="{!myTask.Subject}" required="true"/></td>
+                        <td><apex:inputField value="{!myTask.WhoId}" /></td>
+                        <td><apex:inputField value="{!myTask.ActivityDate}" /></td>
+                        <td>
+                            <table>
+                            <tr>
+                                <td><apex:inputField value="{!myTask.Priority}" /></td>
+                                <td><apex:commandButton action="{!AddTask}" value="Add Task" rerender="TaskSec,errors" immediate="false"/></td>
+                            </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+                </td>
+            </tr>
+            <tr>
+                <td><b>Comments</b></td>
+            </tr>
+            <tr>  
+                <td><apex:inputField value="{!myTask.Description}" style="width:85%"/></td>
+            </tr>
+          </table>
+          </apex:actionRegion>
+          
+          <HR></HR>
+          
+          <apex:pageBlockTable value="{!Tasks}" var="tw" id="theTable" rendered="{!NOT(ISNULL(Tasks))}" styleClass="list">
+            <apex:column >
+                <apex:facet name="header">Assigned To</apex:facet>
+                <apex:outputField value="{!tw.t.OwnerId}"/>
+            </apex:column>
+            <apex:column >
+                <apex:facet name="header">Subject</apex:facet>
+                <apex:outputField value="{!tw.t.Subject}"/>
+            </apex:column>
+            <apex:column >
+                <apex:facet name="header">Name</apex:facet>
+                <apex:outputField value="{!tw.t.WhoId}"/>
+            </apex:column>
+            <apex:column >
+                <apex:facet name="header">Comments</apex:facet>
+                <apex:outputField value="{!tw.t.Description}"/>
+            </apex:column>
+            <apex:column >
+                <apex:facet name="header">Due Date</apex:facet>
+                <apex:outputField value="{!tw.t.ActivityDate}"/>
+            </apex:column>
+            <apex:column >
+                <apex:facet name="header">Priority</apex:facet>
+                <apex:outputField value="{!tw.t.Priority}"/>
+            </apex:column>
+            <apex:column >
+                <apex:facet name="header">Status</apex:facet>
+                <apex:outputField value="{!tw.t.Status}"/>
+            </apex:column>
+            
+           </apex:pageBlockTable>
+           </apex:outputPanel>
+         </apex:pageBlockSection>
+               
+           
+     </apex:pageBlock>
+     
+     </apex:form>
+     <script>
+        function setFocusOnLoad() {} 
+     </script>
+     
+     <script type="text/javascript">
+        try
+        {        	
+            if ("{!callreport.Id}" != "")
+            {
+                closePage(getNewCallReportObject());
+            }
+        }
+        catch(ignore)
+        {}                          
+        
+        /**
+        * Handler for closing the vf page
+        */
+        function closePage(obj)
+        {
+        	try
+        	{        		
+        		//If the new call report flag is true
+        		//Then they're creating a new call report so on save/cancel close the form
+        		if ("{!newCallReport}" == 'true')
+        		{
+		            //close the page
+		            parent.iFrameCloseHandler(obj);
+		        }
+	        }
+	        catch(ignore)
+	        {}	        	        
+        }
+        
+        /**
+         * Function that will build a new Javascript Object based off the saved Call Report
+         *
+         */
+        function getNewCallReportObject()
+        {
+            var obj = new Object(); 
+            obj.Client__c = "{!callreport.Client__c}";
+            obj.Owner__c = "{!callreport.OwnerId}";
+            obj.Meeting_Date__c = "{!MeetingDate}";
+            obj.Meeting_Type__c = "{!callreport.Meeting_Type__c}";
+            obj.Subject_Meeting_Objectives__c = "{!callreport.Subject_Meeting_Objectives__c}";
+            obj.Location__c = "{!callreport.Location__c}";
+            obj.Notes__c = "{!callreport.Notes__c}";
+            obj.Id = "{!callreport.Id}";
+            return obj;            
+        }
+    </script>
+</apex:page>

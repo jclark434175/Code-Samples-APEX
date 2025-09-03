@@ -1,0 +1,139 @@
+<apex:page title="ACE List Manager" id="aceListManager" Controller="CrystalReportController" showHeader="false" sidebar="false" contentType="text/html"> 
+    
+    <style>
+        body
+        {
+            margin:0;
+        }
+                      
+        .imageHeader  
+        {
+            padding:0 5px;
+        }
+        
+        .flashDiv
+        {
+            position: absolute;
+            height: expression(document.body.clientHeight - 52 + "px");
+            min-height: 100%; 
+        }
+        .buttonCrystalRep 
+        {
+            background-image:url('{!$Resource.MyCoverage_Btn}');
+            background-color:transparent;
+            width:130px;
+            height:22px;
+            pading:0;
+            border:none;
+        }
+    </style>
+    
+    <!-- Script to configure the page header -->
+    <script language="javascript" src="{!$Resource.ALMVisualForceTitle}" />
+    <!-- Script to support loading html page over the flex application -->
+    <script language="javascript" src="{!$Resource.ALMIFrameUtil}" />
+    <!-- Script to support export to excel functionality -->
+    <script language="javascript" src="{!$Resource.ALMExcelUtil}" />    
+    <!-- Script to support loading the flex application -->
+    <script language="javascript" src="{!$Resource.SWFObject}" /> 
+    
+    <!-- Style for the page header -->
+    <apex:stylesheet value="{!$Resource.ALMVisualForceClientHeader}" />
+    
+    
+    <!-- Utility function -->
+    <script type="text/javascript">
+        var sid = "{!$Api.Session_ID}";
+        var srv = "{!$Api.Partner_Server_URL_70}";
+        var empl = "{!EmployeeId}";
+        /**
+        * Refresh the current page
+        */
+        function refresh()
+        {
+            parent.location.reload();
+        }
+        function navigate()
+        {
+           try
+           {
+               var Url = "<A HREF="https://na.crystalreports.com/opendoc/openDocument.do?portal=sforce" TARGET="_BLANK">https://na.crystalreports.com/opendoc/openDocument.do?portal=sforce</A>";
+               Url += '&amp;server_url='+ srv;
+               Url += '&amp;session_id=' + sid;
+               Url += '&amp;server_url_for_db_driver=' + srv;
+               Url += '&amp;sType=rpt&amp;iDocID=31494604&amp;lsSEmployeeID='+ empl;
+               //alert(Url);
+               window.open(Url);
+           }
+           catch(error)
+           {
+               alert("Failed to generate report. " + error.Message);
+           }    
+        }  
+        </script>
+    
+    
+    <!-- Header for the application -->
+    <apex:outputPanel id="clientHeader" style="padding:5px 0;width:100%;height45px;" layout="block" styleClass="clientHeader">
+        <table width="99%"><tr>
+            <td width="20%">
+                <apex:image styleClass="imageHeader" value="{!$Resource.ALMVisualForceClientLogo}" />
+            </td>
+            <td width="80%" style="text-align:right;vertical-align: middle">
+                <apex:form >
+                    <apex:commandButton onclick="navigate();" rendered="{!bDisplay}" Rerender="null" styleClass="buttonCrystalRep"/>
+                </apex:form>
+            </td>
+        </tr></table>    
+    </apex:outputPanel>
+    <div id="flashcontent" align="center" class="flashDiv"></div>    
+    
+    <!-- Container for the application -->
+        
+    <!-- Script to load the application and pass the expected parameters -->
+    <script type="text/javascript">
+    
+        var _SERVER_URL = "{!$Api.Partner_Server_URL_90}";
+        
+        var _DOMAIN = _SERVER_URL.substr(0, _SERVER_URL.indexOf("/services",0));
+        
+        var so = new SWFObject("{!$Resource.ACEListManagerBinary}", "FlexSalesforce", "100%", "100%", "9", "#FFFFFF");
+        so.addVariable("session_id", "{!$Api.Session_ID}");
+        so.addVariable("server_url", "{!$Api.Partner_Server_URL_90}");
+        so.addVariable("aceWebServices_wsdl_uri", _DOMAIN+"{!$Resource.WsdlAceWebservices}");
+        so.addVariable("almWebServices_wsdl_uri", _DOMAIN+"{!$Resource.WsdlAlmWebservices}");
+        so.addVariable("aceCommonWebServices_wsdl_uri", _DOMAIN+"{!$Resource.WsdlAceWebservices}");        
+        so.addVariable("featureCacheWebServices_wsdl_uri", _DOMAIN+"{!$Resource.WsdlFeatureCacheWebServices}");
+        so.addVariable("domain", _DOMAIN+"/");
+        <!-- To Enable ALM Log Window, enable the line below, add or adjust the value to logFilters -->
+        so.addVariable("logFilters", "com.straightthrough.crmsolutions.flex.messaging.cache.ACECache;com.straightthrough.crmsolutions.flex.messaging.cache.ACECacheObject;com.straightthrough.crmsolutions.flex.rpc.ace.ACEOperation.*;");
+        <!-- Specifies maximum number of SOAP message retries -->
+        so.addVariable("maxSOAPRetries", "3");
+        so.write("flashcontent");
+        
+    </script>
+
+    
+    <!-- This div is used to display visualforce pages over the flex application -->
+    <div id="customFrame" style="background-color:transparent;border:0px;visibility:hidden;display:none;z-index:5;overflow:auto;"></div> 
+    
+    <!-- Configure the "customFrame" div depending on the browser -->
+    <script type="text/javascript">
+        
+        var cF = document.getElementById("customFrame");
+        var flashContent = document.getElementById("flashcontent");
+        if (navigator.appName.indexOf("Microsoft") != -1)
+        {
+            cF.style.position = 'absolute';
+            flashContent.style.height = document.body.clientHeight - 52 + 'px';
+        }
+        else
+        {
+            var p = document.body.clientHeight/window.outerHeight * 100;            
+            cF.style.position = 'fixed';
+            flashContent.style.width='100%';
+            flashContent.style.height = '10%';
+        }
+        
+    </script>
+</apex:page>

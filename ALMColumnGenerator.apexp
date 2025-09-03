@@ -1,0 +1,28 @@
+<apex:page title="ACE List Manager" id="aceListManagerColumnGenerator" showHeader="false" sidebar="false" contentType="text/html">      
+    <!-- There is a bug with the way Salesforce attempts to access the SWF File.
+		 When there are no valid HTML tags generated it does not access the swf file reference correctly.
+		 Placing the dummy body tag is a workaround to enable the swf file to show up.
+     -->
+    <body/>
+    
+    <!-- Script to support loading the flex application -->
+    <script language="javascript" src="{!$Resource.SWFObject}" />
+    <!-- Container for the application -->
+    <div id="flashcontent"></div>
+    
+    <!-- Script to load the application and pass the expected parameters -->
+    <script type="text/javascript">
+    
+        var _SERVER_URL = "{!$Api.Partner_Server_URL_90}";
+        
+        var _DOMAIN = _SERVER_URL.substr(0, _SERVER_URL.indexOf("/services",0));
+        
+        var so = new SWFObject("{!$Resource.ALMColumnGeneratorBinary}", "ALMColumnGenerator", "100%", "100%", "9", "#FFFFFF");
+        so.addVariable("session_id", "{!$Api.Session_ID}");
+        so.addVariable("server_url", "{!$Api.Partner_Server_URL_90}");
+        so.addVariable("featureCacheWebServices_wsdl_uri", _DOMAIN+"{!$Resource.WsdlFeatureCacheWebServices}");        
+        so.addVariable("domain", _DOMAIN+"/");      
+        so.write("flashcontent");
+        
+    </script> 
+</apex:page>
