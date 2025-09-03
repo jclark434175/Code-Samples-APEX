@@ -1,0 +1,114 @@
+<!--  
+ * Name: NewTask 
+ * Description: Visual Force page used for creating new Tasks
+ *
+ * Confidential &amp; Proprietary, 2007 Tier1CRM Inc.
+ * Property of Tier1CRM Inc.
+ * This document shall not be duplicated, transmitted or used in whole
+ * or in part without written permission from Tier1CRM.
+ -->
+<apex:page standardController="Task" id="newTaskMainpage" title="Log a Task" showHeader="false" extensions="NewTaskPageControllerExtension" sidebar="false">
+    <apex:form id="formParent">  	
+        <apex:pageBlock id="mainPageBlock" title="Task Edit" mode="edit">            
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!doSave}"/>
+                <apex:commandButton value="Cancel" onclick="closePage(null);" immediate="true"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection id="fieldSection" title="Task Information">            
+            	<apex:inputField id="ownerField" value="{!Task.OwnerId}" />
+                <apex:inputField value="{!Task.Status}" />            	
+                <apex:inputField value="{!Task.Subject}" required="true" />                               
+                <apex:inputField id="whoField" value="{!Task.WhoId}" required="true" />
+                <apex:inputField value="{!Task.ActivityDate}" />
+                <apex:inputField id="whatField" value="{!Task.WhatId}" />
+                <apex:inputField value="{!Task.Priority}" required="true" />
+                <apex:pageBlockSectionItem />
+                <apex:inputField value="{!Task.Interaction_Type__c}" required="true" />                
+                <apex:pageBlockSectionItem />
+            	<apex:inputField value="{!Task.Description}" style="width:100%;height:70px" />
+            	<apex:pageBlockSectionItem />                                
+            </apex:pageBlockSection>
+            <!-- <apex:pageBlockSection id="callReportInformation" title="Call Report and Task Information">            
+            	<apex:inputField value="{!Task.Description}" style="width:75%;height:70px" />
+            	<apex:pageBlockSectionItem /> 
+            	    <apex:pageBlockSectionItem labelStyle="padding-right:0px" dataStyle="padding-left:0px;padding-top:4px">
+	            	<apex:inputCheckbox title="Send Notification Email" id="notificationCheckbox" />
+	            	<apex:outputLabel value="Send Notification Email" for="notificationCheckbox" /> 
+            	</apex:pageBlockSectionItem> 
+            </apex:pageBlockSection> -->
+            <apex:pageBlockSection showHeader="true" rendered="true" title="Reminder" collapsible="false" columns="1">        				
+            	<!-- <apex:facet name="body">
+            	            	<apex:pageBlockSectionItem >
+	                	<apex:outputLabel value="Reminder" for="reminderSetter" />                    
+	         			<apex:inputField id="reminderSetter" value="{!Task.IsReminderSet}" />	            					
+	                </apex:pageBlockSectionItem>
+	        
+	                <apex:pageBlockSectionItem >
+	            		<apex:outputLabel value="" for="inputReminder" />
+	   					<apex:inputField id="inputReminder" value="{!Task.ReminderDateTime}" />
+	     			</apex:pageBlockSectionItem>
+            	</apex:facet> -->
+
+				<apex:panelGrid columns="4" columnClasses="labelCol,null,null,dataCol" cellpadding="0" cellspacing="0" style="width:100%">
+					<label style="margin-right:8px">Reminder</label>
+					<apex:inputField id="reminderSetter" value="{!Task.IsReminderSet}" />
+					<apex:inputField id="inputReminder" value="{!Task.ReminderDateTime}" />
+					&amp;nbsp;     					
+				</apex:panelGrid>
+	     		<!--  <apex:pageBlockSectionItem >
+	                	<apex:outputLabel value="Reminder" for="reminderSetter" />                    
+	         			<apex:inputField id="reminderSetter" value="{!Task.IsReminderSet}" />	            					
+	                </apex:pageBlockSectionItem>
+	        
+	                <apex:pageBlockSectionItem >
+	            		<apex:outputLabel value="" for="inputReminder" />
+	   					<apex:inputField id="inputReminder" value="{!Task.ReminderDateTime}" />
+	     			</apex:pageBlockSectionItem>-->
+            </apex:pageBlockSection>
+        </apex:pageBlock>                                   
+    </apex:form>
+    <script type="text/javascript">
+        try
+        {        	
+            if ("{!SavedTask.Id}" != "")
+            {
+                closePage(getNewTaskObject());
+            }
+        }
+        catch(ignore)
+        {}                          
+        
+        /**
+        * Handler for closing the vf page
+        */
+        function closePage(obj)
+        {       	
+            //close the page
+            parent.iFrameCloseHandler(obj);
+        }
+        
+        /**
+         * Function that will build a new Javascript Object based off the saved Task
+         *
+         */
+        function getNewTaskObject()
+        {
+            var obj = new Object();
+            obj.ContactId = "{!SavedTask.WhoId}";
+            obj.Id = "{!SavedTask.Id}";
+            obj.ContactName = "{!SavedTask.Who.Name}";
+            obj.OwnerId = "{!SavedTask.OwnerId}";
+            obj.OwnerName = "{!SavedTask.Owner.Name}";
+            obj.AccountId = "{!SavedTask.AccountId}";
+            obj.AccountName = "{!SavedTask.Account.Name}";
+            obj.Subject = "{!SavedTask.Subject}";
+            obj.Status = "{!SavedTask.Status}";
+            obj.ActivityDate = "{!ActivityDate}";
+            obj.Description = "{!SavedTask.Description}";
+            obj.InteractionType = "{!SavedTask.Interaction_Type__c}";
+            obj.CreatedDate = "{!SavedTask.CreatedDate}";
+            obj.CreatedBy = "{!SavedTask.CreatedBy.Name}";           
+            return obj;
+        }
+    </script>   
+</apex:page>

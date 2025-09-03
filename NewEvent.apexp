@@ -1,0 +1,2 @@
+<apex:page standardController="Event" action="{!create }" sidebar="false">
+</apex:page>

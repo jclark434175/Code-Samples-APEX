@@ -1,0 +1,292 @@
+<apex:page id="mainPage" standardController="Account" extensions="PhilboCRCExtension" showHeader="true" sidebar="true" >
+	
+	<script type="text/javascript" language="JavaScript">
+	
+		var _THE_FOCUSED_ITEM='';
+		var _MENU_ID = 'mainPage:menuPanel';
+		var _CLICKED_COMPONENT_INPUT_ID = 'mainPage:inputDataForm:clickedComponentId';
+		
+		var timeoutID;
+		var _COOKIE_NAME_START_DATE = 'crcParamStartDate';
+		var _COOKIE_NAME_END_DATE = 'crcParamEndDate';
+		
+		function setId(val)
+		{
+			_THE_FOCUSED_ITEM=val;
+			document.getElementById('mainPage:outputValue').innerHTML = _THE_FOCUSED_ITEM;
+		}
+		
+		
+		//----------------------------- START COOKIE ----------------
+		function createCookie(name,value,days) {
+			if (days) {
+				var date = new Date();
+				date.setTime(date.getTime()+(days*24*60*60*1000));
+				var expires = "; expires="+date.toGMTString();
+			}
+			else var expires = "";
+			document.cookie = name+"="+value+expires+"; path=/";
+		}
+		
+		function readCookie(name) {
+			var nameEQ = name + "=";
+			var ca = document.cookie.split(';');
+			for(var i=0;i < ca.length;i++) {
+				var c = ca[i];
+				while (c.charAt(0)==' ') c = c.substring(1,c.length);
+				if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+			}
+			return null;
+		}
+		
+		function eraseCookie(name) {
+			createCookie(name,"",-1);
+		}
+		//----------------------------- END COOKIE ----------------
+		
+		
+		function yyy(e , id) {
+			document.getElementById ( _CLICKED_COMPONENT_INPUT_ID ).value = id;
+			doSubmitDates ();
+		}
+		
+		
+		//----------------------------- START MENU ----------------
+		function showMenu(e) 
+		{
+			window.clearTimeout(timeoutID);
+			var menuObj = document.getElementById(_MENU_ID);
+			menuObj.style.display = "block";
+			
+			/*
+			if (navigator.appName == "Microsoft Internet Explorer")
+			{
+				menuObj.style.left = e.clientX + 'px';
+				menuObj.style.top = e.clientY + 'px';
+			}
+			else
+			{
+				menuObj.style.left = e.pageX + 'px';;
+ 	   			menuObj.style.top = e.pageY  + 'px';;
+			}
+			*/
+			
+			menuObj.style.left = e.x + 'px';
+			menuObj.style.top = e.y + 'px';
+		}
+		function hideMenu() 
+		{
+			document.getElementById(_MENU_ID).style.display = "none";
+		}
+		function queueHideMenu()
+		{
+			
+			timeoutID = window.setTimeout(hideMenu(), 5000);
+			alert('timeout id: '+timeoutID);
+		}
+		function doAction(val)
+		{
+			alert( val+' '+_THE_FOCUSED_ITEM);
+		}
+		//----------------------------- END MENU ----------------
+
+		function doSubmitDates()
+		{
+			//clear current data
+			document.getElementById('mainPage:crcGridBlock:interestBlockSection:interestDataSectionItem:interestsOutputPanel').innerHTML = 'refreshing...';
+			
+			//obtain data values
+			var startDate = document.getElementById('mainPage:inputDataForm:startDate').value;
+			var endDate = document.getElementById('mainPage:inputDataForm:endDate').value;
+			
+			//create cookies
+			createCookie(_COOKIE_NAME_START_DATE, startDate,365);
+			createCookie(_COOKIE_NAME_END_DATE, endDate,365);
+			
+			//trigger ajax request
+			submitDates();
+		}
+		
+		
+	</script>
+		
+	
+	
+	<apex:form id="inputDataForm" >
+		<apex:actionFunction action="{!processDates}" name="submitDates" reRender="mainPage:refreshPanel,mainPage:crcGridBlock:interestBlockSection" />
+		
+		
+	  	<apex:outputPanel id="inputParameters">
+			<apex:outputText value="Start date:" />
+			<apex:inputText id="startDate" value="{!b_startDate}" ></apex:inputText>
+			 
+			<apex:outputText value="End date:" />
+			<apex:inputText id="endDate" value="{!b_endDate}" ></apex:inputText>
+			 
+			<apex:image onclick="doSubmitDates()" value="/servlet/servlet.FileDownload?file=01530000000htZG"  onmouseover="this.style.cursor='pointer'" onmouseout="this.style.cursor=''"></apex:image>
+			
+			<apex:inputText value="{!clickedComponentInputId}" id="clickedComponentId" ></apex:inputText>
+			
+	 	</apex:outputPanel> 
+		
+	
+	</apex:form>
+	
+	
+	<apex:detail id="detail" relatedList="false" relatedListHover="false">
+	</apex:detail>
+
+	<!-- 
+	<apex:relatedList list="OpenActivities"></apex:relatedList>
+	 -->
+	
+	<apex:pageBlock id="crcGridBlock" >	
+	
+		<apex:pageBlockSection columns="1" title="Stock Interests" id="interestBlockSection" >
+		
+			<apex:pageBlockSectionItem id="interestHdrSectionItem" >		
+				<apex:outputPanel id="interestHdrPanel" layout="block" style="overflow:auto">
+					<apex:dataTable border="1" cellpadding="1" align="left" width="95%" id="interestsHdr" value="{!bogusVal}" var="bogusVar" rows="1">
+						<apex:column width="11">
+							&amp;nbsp;
+						</apex:column>
+						<apex:column width="80" id="Reason__c" onclick="yyy(event,id)">
+							<b>ABCDEF</b>
+<!--							<b>{!rsnHdr}</b> -->
+						</apex:column>
+						<apex:column width="120" id="Contact__c" onclick="yyy(event,id)">
+							<b>{!contHdr}</b>
+						</apex:column>
+						<apex:column width="80" id="Symbol__c" onclick="yyy(event,id)">
+							<b>{!symHdr}</b>
+						</apex:column>
+					</apex:dataTable>
+				</apex:outputPanel>
+			</apex:pageBlockSectionItem>
+
+			<apex:pageBlockSectionItem id="interestDataSectionItem" >			
+				<apex:outputPanel id="interestOutputPanel" layout="block" style="overflow:auto;height:250px;">
+					<apex:dataTable border="1" cellpadding="1" align="left" width="95%" id="interests" value="{!interests}" var="iObj">
+						<apex:column width="11">
+						    <apex:image onclick="setId('{!iObj.Contact__c}');showMenu(event);" id="dd" value="/servlet/servlet.FileDownload?file=01530000000htS3" width="11" height="8"/>
+						</apex:column>
+						<apex:column width="80">
+						    <apex:outputText value="{!iObj.Reason__c}"/>
+						</apex:column>
+						<apex:column width="120">
+						    <apex:outputText value="{!iObj.Contact__c}"/>
+						</apex:column>
+						<apex:column width="80" >
+							<apex:outputText value="{!iObj.Symbol__c}"/>
+						</apex:column>
+					</apex:dataTable>
+				</apex:outputPanel>
+			</apex:pageBlockSectionItem>
+			
+		</apex:pageBlockSection>
+<!--		
+		<apex:pageBlockSection columns="1" title="Contact Coverage" id="contCovBlockSection" >
+			
+			<apex:pageBlockSectionItem id="contCovHdrSectionItem" >		
+				<apex:outputPanel id="contCovResultsHdrPanel" layout="block" style="overflow:auto">
+					<apex:dataTable border="1" cellpadding="1" align="left" width="95%" id="contCovResultsHdr" value="{!bogusVal}" var="bogusVar" rows="1">
+						<apex:column width="11">
+							&amp;nbsp;
+						</apex:column>
+						<apex:column width="80" id="Reason__c" onclick="yyy(event,id)">
+							<b>{!rsnHdr}</b>
+						</apex:column>
+						<apex:column width="120" id="Contact__c" onclick="yyy(event,id)">
+							<b>{!contHdr}</b>
+						</apex:column>
+						<apex:column width="80" id="Symbol__c" onclick="yyy(event,id)">
+							<b>{!symHdr}</b>
+						</apex:column>
+					</apex:dataTable>
+				</apex:outputPanel>
+			</apex:pageBlockSectionItem>
+
+			
+					<apex:outputPanel layout="block" id="dataTable2" style="overflow:auto;height:150px;">
+					<apex:dataTable border="1" cellpadding="1" align="center" width="95%" value="{!contactCoverage}" var="cc">
+						<apex:column width="11" >
+						    <apex:facet name="header">&amp;nbsp;</apex:facet>
+						    <apex:image onclick="setId('{!cc.Contact__r.Id}');showMenu(event);" id="dd" value="/servlet/servlet.FileDownload?file=01530000000htS3" width="11" height="8"/>
+						</apex:column>
+						<apex:column >
+						    <apex:facet name="header">Contact</apex:facet>
+						    <apex:outputText value="{!cc.Contact__r.Name}"/>
+						</apex:column>
+						<apex:column >
+							<apex:facet name="header">Employee</apex:facet>
+						    <apex:outputText value="{!cc.Employee__r.Name}"/>
+						</apex:column>
+						<apex:column >
+							<apex:facet name="header">Role</apex:facet>
+							<apex:outputText value="{!cc.Role__c}"/>
+						</apex:column>
+					</apex:dataTable>
+				</apex:outputPanel>
+			</apex:pageBlockSectionItem>
+		</apex:pageBlockSection>
+-->
+	</apex:pageBlock>
+	
+	
+	<apex:outputPanel id="menuPanel" layout="block" style="position:absolute;padding:1px;border-style:solid;border-width:1px;border-color:#575757;background-color:#ADADAD;display:none;width:125px;height:70px;">
+		
+		<apex:outputPanel layout="block" onclick="hideMenu();">
+			<apex:image value="/servlet/servlet.FileDownload?file=01530000000htSr" onmouseover="this.style.cursor='pointer'" onmouseout="this.style.cursor=''"/>
+			<apex:outputLabel value="Send Email" onclick="doAction('Send Email');" onmouseover="this.style.cursor='pointer'" onmouseout="this.style.cursor=''"/>
+		</apex:outputPanel>
+		
+		<apex:outputPanel layout="block" onclick="hideMenu();">
+			<apex:image value="/servlet/servlet.FileDownload?file=01530000000htSs" onmouseover="this.style.cursor='pointer'" onmouseout="this.style.cursor=''"/>
+			<apex:outputLabel value="Send Research" onclick="doAction('Send Research');" onmouseover="this.style.cursor='pointer'" onmouseout="this.style.cursor=''"/>
+		</apex:outputPanel>
+		
+		<apex:outputPanel layout="block" onclick="hideMenu();">
+			<apex:image value="/servlet/servlet.FileDownload?file=01530000000htSx" onmouseover="this.style.cursor='pointer'" onmouseout="this.style.cursor=''"/>
+			<apex:outputLabel value="Book a Meeting" onclick="doAction('Book a Meeting');" onmouseover="this.style.cursor='pointer'" onmouseout="this.style.cursor=''"/>
+		</apex:outputPanel>
+		
+		<apex:outputPanel layout="block" onclick="hideMenu();">
+			<apex:image value="/servlet/servlet.FileDownload?file=01530000000htSw" onmouseover="this.style.cursor='pointer'" onmouseout="this.style.cursor=''"/>
+			<apex:outputLabel value="Log a Task" onclick="doAction('Log a Task');" onmouseover="this.style.cursor='pointer'" onmouseout="this.style.cursor=''"/>
+		</apex:outputPanel>
+		
+	</apex:outputPanel>
+	
+	
+	<apex:outputPanel layout="block">
+		<apex:outputLabel value="Debugging" />
+	</apex:outputPanel>
+	
+	<apex:outputPanel layout="block">
+		<apex:outputLabel value="current contact" id="outputValue" />
+	</apex:outputPanel>
+	
+	
+	
+	<script type="text/javascript" language="JavaScript">
+	
+		//read out the cookie
+		var startDateCookieVal = readCookie(_COOKIE_NAME_START_DATE);
+		if(startDateCookieVal!=null)
+		{
+		document.getElementById('mainPage:inputDataForm:startDate').value = startDateCookieVal;
+		}
+		
+		//read out the cookie
+		var endDateCookieVal = readCookie(_COOKIE_NAME_END_DATE);
+		if(endDateCookieVal!=null)
+		{
+		document.getElementById('mainPage:inputDataForm:endDate').value = endDateCookieVal;
+		}
+		
+		//refresh data with current date filters
+		doSubmitDates();
+		
+	</script>
+	
+</apex:page>

@@ -1,0 +1,8 @@
+<apex:page standardController="Task" tabStyle="Task" sidebar="false" showHeader="false">
+	<!-- Salesforce currently has a bug with the details tag.
+		 If the showHeader is false and the detail is displayed the styling is removed.
+		 The <body class="<name>" /> tag is placed so the original style is placed.
+	 -->
+	<body class="taskTab" />
+	<apex:detail relatedList="true" />
+</apex:page>

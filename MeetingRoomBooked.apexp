@@ -1,0 +1,90 @@
+<apex:page standardController="Meeting_Room_Booked__c" extensions="MeetingRoomBookedController" tabStyle="Meeting_Room_Booked__c" showHeader="true" sidebar="true">
+	<apex:stylesheet value="/resources/htdocs/css/basic.css"/>
+	<style>
+			.selectableStyle { font-weight: normal; text-decoration:underline; cursor: pointer; }
+	</style>
+    
+    <apex:sectionHeader title="Meeting Room" subtitle="Book a Meeting Room"/>
+    <apex:form >
+		 
+		 
+		<!-- Action definitions -->
+		<apex:actionFunction name="setSelectedRoom" action="{!changeSelectedRoom}" reRender="selectMeetingRoom">
+      		<apex:param name="a" assignTo="{!selectedRoomId}" value="" />
+  		</apex:actionFunction> 
+  		
+  		<apex:actionFunction name="setSelectedConference" action="{!changeSelectedConference}" reRender="selectMeetingRoom,roomSearch,resultSectionTable,meetingRoomNotFoundError"/>
+  		  		
+  		  		
+  		  		
+		<!-- Must reference fields so they are available in the controller -->
+		<apex:outputText value="{!Meeting_Room_Booked__c.Id}" rendered="false"/>
+		<apex:outputText value="{!Meeting_Room_Booked__c.Conference__c}" rendered="false"/>
+		<apex:outputText value="{!Meeting_Room_Booked__c.Hotel_Meeting_Room__c}" rendered="false"/>
+		<apex:outputText value="{!Meeting_Room_Booked__c.Hotel_Meeting_Room__r.Hotel__r.Name}" rendered="false"/>
+		
+		
+		<!-- The view -->  
+        <apex:pageBlock mode="edit"  title="Modify Meeting Room Booking">
+            <apex:pageBlockButtons > 
+                <apex:commandButton value="Save" action="{!doCommit}" />
+                <apex:commandButton value="Save &amp; New" action="{!doCommitSaveAndNew}" />
+                <apex:commandButton value="Cancel" action="{!cancel}" />
+            </apex:pageBlockButtons>
+            
+            <apex:pageMessage id="meetingRoomError"  		detail="" 	summary="Please select a meeting room"  			title=""   	rendered="{!showRoomSelectionMessage}"  severity="error"  	strength="3"   />  
+            
+            
+            <apex:pageBlockSection showHeader="true" title="Conference Information" columns="2" id="selectMeetingRoom">
+                <apex:pageBlockSectionItem >    
+                    <apex:outputLabel value="Meeting Room:"/> 
+                    <apex:outputLabel value="{!selectedRoomValue}" id="meetingRoom"/>
+                </apex:pageBlockSectionItem > 
+                <apex:pageBlockSectionItem >    
+                    <apex:outputLabel value="Conference:"/>
+                    <apex:inputField value="{!Meeting_Room_Booked__c.Conference__c}" required="true" onchange="setSelectedConference();" />
+                </apex:pageBlockSectionItem >
+            </apex:pageBlockSection>
+            
+            
+            <apex:pageBlockSection title="Search Available Meeting Room(s)" collapsible="false" columns="1" collapsible="true">
+                <apex:pageBlockSectionItem >
+	                <apex:outputPanel layout="searchBlock" id="roomSearch">
+	                    <apex:outputLabel value="Search:" style="padding:0px 5px;font-weight:bold;" for="searchText"/>                                         
+	                 	<apex:inputText id="searchText" value="{!searchText}" size="40"/>
+	                 	<apex:commandButton value="Filter" action="{!doSearch}" reRender="resultSectionTable,meetingRoomNotFoundError" status="status"/>
+	                 	<apex:commandButton value="Show all available" action="{!doSearchAll}" reRender="resultSectionTable,meetingRoomNotFoundError,roomSearch" status="status"/>
+	                 	<apex:actionStatus id="status" startText="processing..." startStyle="padding:7px 0px; background-color:#D9D9D9" />
+	                </apex:outputPanel>
+	            </apex:pageBlockSectionItem>
+	            <apex:pageBlockSectionItem >
+	                <apex:outputText style="font-style:italic; font-size:11px; padding-left:4px" value="Search format: 'hotel name' or 'hotel name, room name'" />
+   				</apex:pageBlockSectionItem>
+   			</apex:pageBlockSection>
+            
+             
+            <apex:pageBlockSection title="Available Meeting Rooms" id="resultSection" columns="1" collapsible="false">
+                <apex:pageBlockTable value="{!searchResults}" var="item" id="resultSectionTable" >    
+                    <apex:column headerValue="Hotel Name">                
+                        <apex:outputText value="{!item.Hotel__r.Name}"/>
+                    </apex:column>  
+                    <apex:column headerValue="Room">
+                    	<apex:outputPanel onclick="setSelectedRoom('{!item.Id}');" >
+                    	    <apex:outputText value="{!item.Name}" styleClass="selectableStyle" />
+                    	</apex:outputPanel>               
+                    </apex:column>
+                    <apex:column headerValue="Type">
+                        <apex:outputText value="{!item.Type__c}"/>                   
+                    </apex:column>         
+              	</apex:pageBlockTable>  
+            	<apex:pageBlockSectionItem />
+           	</apex:pageBlockSection>
+            
+            <apex:outputPanel id="meetingRoomNotFoundError">
+            	<apex:pageMessage detail=""  	summary="No available meeting rooms were found"  	title=""  	rendered="{!showNoRoomsFoundMessage}"  	severity="warning"  strength="0"   />  
+            </apex:outputPanel>
+                        
+        </apex:pageblock>
+
+    </apex:form>
+</apex:page>
